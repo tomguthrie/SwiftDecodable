@@ -1,9 +1,10 @@
-protocol Decodable {
+/// Type that can be decoded from JSON.
+public protocol Decodable {
     init(decoder: Decoder) throws
 }
 
 extension Decodable {
-    init(json: JSON) throws {
+    public init(json: JSON) throws {
         try self.init(decoder: Decoder(json: json))
     }
 }

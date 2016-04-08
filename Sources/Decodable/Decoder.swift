@@ -1,30 +1,30 @@
 import Foundation
 
 /// Represents a JSON object type.
-typealias JSON = [String: AnyObject]
+public typealias JSON = [String: AnyObject]
 
 /// Faciliates decoding a JSON object.
-struct Decoder {
-    let json: JSON
-    let path: [String]
+public struct Decoder {
+    public let json: JSON
+    public let path: [String]
 
-    init(json: JSON) {
+    public init(json: JSON) {
         self.json = json
         self.path = []
     }
 
-    private init(json: JSON, path: [String]) {
+    init(json: JSON, path: [String]) {
         self.json = json
         self.path = path
     }
 
-    private func resolvedPath(key: String) -> String {
+    func resolvedPath(key: String) -> String {
         let path = self.path + [key]
         return path.joined(separator: ".")
     }
 
     /// Error that has occured during decoding.
-    enum Error: ErrorProtocol {
+    public enum Error: ErrorProtocol {
         case MissingKey(String)
         case WrongType(key: String, expected: Any.Type, actual: Any.Type)
         case InvalidURL(key: String, stringValue: String)
@@ -32,7 +32,7 @@ struct Decoder {
     }
 
     /// Decode an `NSURL` located at `key`, throws Error including Error.InvalidURL.
-    func decode(key: String) throws -> NSURL {
+    public func decode(key: String) throws -> NSURL {
         let stringValue: String = try decode(key)
 
         guard let url = NSURL(string: stringValue) else {
@@ -43,7 +43,7 @@ struct Decoder {
     }
 
     /// Decode an `NSDate` located at `key`, throws Error including Error.InvalidDate.
-    func decode(key: String, formatter: NSDateFormatter) throws -> NSDate {
+    public func decode(key: String, formatter: NSDateFormatter) throws -> NSDate {
         let stringValue: String = try decode(key)
 
         guard let date = formatter.date(from: stringValue) else {
@@ -54,13 +54,13 @@ struct Decoder {
     }
 
     /// Decode a `Decodable` `Value` located at `key`, throws Error.
-    func decode<Value: Decodable>(key: String) throws -> Value {
+    public func decode<Value: Decodable>(key: String) throws -> Value {
         let json: JSON = try decode(key)
         return try Value(decoder: Decoder(json: json, path: path + [key]))
     }
 
     /// Decode a `Value` located at `key`, throws Error.
-    func decode<Value>(key: String) throws -> Value {
+    public func decode<Value>(key: String) throws -> Value {
         guard let value = json[key] as? Value else {
             guard let value = json[key] else {
                 throw Error.MissingKey(resolvedPath(key))
