@@ -103,4 +103,31 @@ class DecoderTests: XCTestCase {
         XCTAssertEqual(person.age, 25)
         XCTAssertEqual(person.email, "johndoe@gmail.com")
     }
+
+    func testDecodingDecodableMissingKey() {
+        let decoder = Decoder(json: ["person": [:]])
+        XCTAssertThrowsError(try decoder.decode("person") as Person) { error in
+            switch error {
+            case let Decoder.Error.MissingKey(key):
+                XCTAssertEqual(key, "person.name")
+            default:
+                XCTFail("Wrong error thrown")
+            }
+        }
+    }
+
+    func testDecodingDecodableWrongType() {
+        let decoder = Decoder(json: ["person": ["name": "John Doe"]])
+        XCTAssertThrowsError(try decoder.decode("person") as Person) { error in
+            switch error {
+            case let Decoder.Error.WrongType(key, _, _):
+                XCTAssertEqual(key, "person.name")
+                // FIXME: Properly test types returned.
+//                XCTAssertEqual(String(expected), String(Person.self))
+//                XCTAssertEqual(String(actual), String(String.self))
+            default:
+                XCTFail("Wrong error thrown")
+            }
+        }
+    }
 }
