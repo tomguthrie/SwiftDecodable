@@ -86,4 +86,21 @@ class DecoderTests: XCTestCase {
             }
         }
     }
+
+    func testDecodingDecodable() throws {
+        let decoder = Decoder(json: ["person": [
+            "name": [
+                "first": "John",
+                "second": "Doe"
+            ],
+            "age": 25,
+            "email": "johndoe@gmail.com"
+        ]])
+
+        let person: Person = try decoder.decode("person")
+        XCTAssertEqual(person.name.first, "John")
+        XCTAssertEqual(person.name.second, "Doe")
+        XCTAssertEqual(person.age, 25)
+        XCTAssertEqual(person.email, "johndoe@gmail.com")
+    }
 }

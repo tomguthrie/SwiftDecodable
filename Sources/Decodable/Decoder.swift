@@ -19,7 +19,7 @@ struct Decoder {
         case InvalidDate(key: String, stringValue: String, formatter: NSDateFormatter)
     }
 
-    /// Decode an `NSURL` located at `key` throws Error including Error.InvalidURL.
+    /// Decode an `NSURL` located at `key`, throws Error including Error.InvalidURL.
     func decode(key: String) throws -> NSURL {
         let stringValue: String = try decode(key)
 
@@ -30,7 +30,7 @@ struct Decoder {
         return url
     }
 
-    /// Decode an `NSDate` located at `key` throws Error including Error.InvalidDate.
+    /// Decode an `NSDate` located at `key`, throws Error including Error.InvalidDate.
     func decode(key: String, formatter: NSDateFormatter) throws -> NSDate {
         let stringValue: String = try decode(key)
 
@@ -41,7 +41,13 @@ struct Decoder {
         return date
     }
 
-    /// Decode a `Value` located at `key` throws Error.
+    /// Decode a `Decodable` `Value` located at `key`, throws Error.
+    func decode<Value: Decodable>(key: String) throws -> Value {
+        let json: JSON = try decode(key)
+        return try Value(decoder: Decoder(json: json))
+    }
+
+    /// Decode a `Value` located at `key`, throws Error.
     func decode<Value>(key: String) throws -> Value {
         guard let value = json[key] as? Value else {
             guard let value = json[key] else {
