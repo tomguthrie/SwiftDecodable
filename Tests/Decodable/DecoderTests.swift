@@ -59,4 +59,31 @@ class DecoderTests: XCTestCase {
             }
         }
     }
+
+    func testDecodingDate() throws {
+        let date = NSDate()
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd 'at' HH:mm:ss"
+
+        let decoder = Decoder(json: ["date": formatter.string(from: date)])
+        let result: NSDate = try decoder.decode("date", formatter: formatter)
+        XCTAssertEqual(formatter.string(from: result), formatter.string(from: date))
+    }
+
+    func testDecodingInvalidDate() {
+        let formatter = NSDateFormatter()
+        formatter.dateStyle = .longStyle
+
+        let decoder = Decoder(json: ["date": "12:00 PM"])
+        XCTAssertThrowsError(try decoder.decode("date", formatter: formatter) as NSDate) { error in
+            switch error {
+            case let Decoder.Error.InvalidDate(key, stringValue, formatter):
+                XCTAssertEqual(key, "date")
+                XCTAssertEqual(stringValue, "12:00 PM")
+                XCTAssertEqual(formatter, formatter)
+            default:
+                XCTFail("Wrong error thrown")
+            }
+        }
+    }
 }
