@@ -32,4 +32,21 @@ class DecodableTests: XCTestCase {
         XCTAssertEqual(person.age, 25)
         XCTAssertNil(person.email)
     }
+
+    func testDecodesFromData() throws {
+        let data = try NSJSONSerialization.data(withJSONObject: [
+            "name": [
+                "first": "John",
+                "second": "Doe"
+            ],
+            "age": 25,
+            "email": "johndoe@gmail.com"
+        ], options: [])
+
+        let person = try Person(data: data)
+        XCTAssertEqual(person.name.first, "John")
+        XCTAssertEqual(person.name.second, "Doe")
+        XCTAssertEqual(person.age, 25)
+        XCTAssertEqual(person.email, "johndoe@gmail.com")
+    }
 }

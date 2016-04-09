@@ -29,6 +29,7 @@ public struct Decoder {
         case wrongType(key: String, expected: Any.Type, actual: Any.Type)
         case invalidURL(key: String, stringValue: String)
         case invalidDate(key: String, stringValue: String, formatter: NSDateFormatter)
+        case invalidJSON(AnyObject)
     }
 
     /// Decode an `NSURL` located at `key`, throws Error including Error.InvalidURL.
