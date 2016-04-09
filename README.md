@@ -14,8 +14,8 @@ struct Person {
 
 extension Person: Decodable {
     init(decoder: Decoder) throws {
-        self.name = try decoder.decode("name")
-        self.age = try decoder.decode("age")
+        self.name = try decoder.value(forKey: "name")
+        self.age = try decoder.value(forKey: "age")
     }
 }
 ```

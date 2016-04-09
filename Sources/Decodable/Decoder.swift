@@ -1,9 +1,9 @@
 import Foundation
 
-/// Represents a JSON object type.
+/// JSON object type.
 public typealias JSON = [String: AnyObject]
 
-/// Faciliates decoding a JSON object.
+/// Decodes JSON in a safe manner. Errors will be thrown describing why decoding failed.
 public struct Decoder {
     public let json: JSON
     public let path: [String]
@@ -23,7 +23,7 @@ public struct Decoder {
         return path.joined(separator: ".")
     }
 
-    /// Error that has occured during decoding.
+    /// Possible errors thrown during decoding.
     public enum Error: ErrorProtocol {
         case missingKey(String)
         case wrongType(key: String, expected: Any.Type, actual: Any.Type)
@@ -32,44 +32,38 @@ public struct Decoder {
         case invalidJSON(AnyObject)
     }
 
-    /// Decode an `NSURL` located at `key`, throws Error including Error.InvalidURL.
-    public func decode(key: String) throws -> NSURL {
-        let stringValue: String = try decode(key)
-
+    /// Decode url for key.
+    public func value(forKey key: String) throws -> NSURL {
+        let stringValue: String = try value(forKey: key)
         guard let url = NSURL(string: stringValue) else {
             throw Error.invalidURL(key: resolvedPath(key), stringValue: stringValue)
         }
-
         return url
     }
 
-    /// Decode an `NSDate` located at `key`, throws Error including Error.InvalidDate.
-    public func decode(key: String, formatter: NSDateFormatter) throws -> NSDate {
-        let stringValue: String = try decode(key)
-
+    /// Decode date for key using formatter.
+    public func value(forKey key: String, formatter: NSDateFormatter) throws -> NSDate {
+        let stringValue: String = try value(forKey: key)
         guard let date = formatter.date(from: stringValue) else {
             throw Error.invalidDate(key: resolvedPath(key), stringValue: stringValue, formatter: formatter)
         }
-
         return date
     }
 
-    /// Decode a `Decodable` `Value` located at `key`, throws Error.
-    public func decode<Value: Decodable>(key: String) throws -> Value {
-        let json: JSON = try decode(key)
+    /// Decode decodable value for key.
+    public func value<Value: Decodable>(forKey key: String) throws -> Value {
+        let json: JSON = try value(forKey: key)
         return try Value(decoder: Decoder(json: json, path: path + [key]))
     }
 
-    /// Decode a `Value` located at `key`, throws Error.
-    public func decode<Value>(key: String) throws -> Value {
+    /// Decode value for key.
+    public func value<Value>(forKey key: String) throws -> Value {
         guard let value = json[key] as? Value else {
             guard let value = json[key] else {
                 throw Error.missingKey(resolvedPath(key))
             }
-
             throw Error.wrongType(key: resolvedPath(key), expected: Value.self, actual: value.dynamicType)
         }
-
         return value
     }
 
@@ -83,26 +77,23 @@ public struct Decoder {
         }
     }
 
-    /// Decode an `NSURL` located at `key`, throws Error including Error.InvalidURL but will return
-    /// nil if key is missing.
-    public func decodeOptional(key: String) throws -> NSURL? {
-        return try ignoreMissingKey(try decode(key))
+    /// Decode url for key, returning nil if not found.
+    public func optionalValue(forKey key: String) throws -> NSURL? {
+        return try ignoreMissingKey(try value(forKey: key))
     }
 
-    /// Decode an `NSDate` located at `key`, throws Error including Error.InvalidDate but will return
-    /// nil if key is missing.
-    public func decodeOptional(key: String, formatter: NSDateFormatter) throws -> NSDate? {
-        return try ignoreMissingKey(try decode(key))
+    /// Decode date for key using a formatter, returning nil if not found.
+    public func optionalValue(forKey key: String, formatter: NSDateFormatter) throws -> NSDate? {
+        return try ignoreMissingKey(try value(forKey: key))
     }
 
-    /// Decode a `Decodable` `Value` located at `key`, throws Error but will return nil if key is
-    /// missing.
-    public func decodeOptional<Value: Decodable>(key: String) throws -> Value? {
-        return try ignoreMissingKey(try decode(key))
+    /// Decode decodable value for key, returning nil if not found.
+    public func optionalValue<Value: Decodable>(forKey key: String) throws -> Value? {
+        return try ignoreMissingKey(try value(forKey: key))
     }
 
-    /// Decode `Value` located at `key`, throws Error but will return nil if key is missing.
-    public func decodeOptional<Value>(key: String) throws -> Value? {
-        return try ignoreMissingKey(try decode(key))
+    /// Decode value for key, returning nil if not found.
+    public func optionalValue<Value>(forKey key: String) throws -> Value? {
+        return try ignoreMissingKey(try value(forKey: key))
     }
 }
