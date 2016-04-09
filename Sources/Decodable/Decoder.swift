@@ -72,14 +72,36 @@ public struct Decoder {
         return value
     }
 
-    /// Decode `Value` located at `key`, throws Error but will return nil if key is missing.
-    public func decodeOptional<Value>(key: String) throws -> Value? {
+    func ignoreMissingKey<Value>(@autoclosure expression: () throws -> Value) throws -> Value? {
         do {
-            return try decode(key)
+            return try expression()
         } catch Error.MissingKey {
             return nil
         } catch {
             throw error
         }
+    }
+
+    /// Decode an `NSURL` located at `key`, throws Error including Error.InvalidURL but will return
+    /// nil if key is missing.
+    public func decodeOptional(key: String) throws -> NSURL? {
+        return try ignoreMissingKey(try decode(key))
+    }
+
+    /// Decode an `NSDate` located at `key`, throws Error including Error.InvalidDate but will return
+    /// nil if key is missing.
+    public func decodeOptional(key: String, formatter: NSDateFormatter) throws -> NSDate? {
+        return try ignoreMissingKey(try decode(key))
+    }
+
+    /// Decode a `Decodable` `Value` located at `key`, throws Error but will return nil if key is
+    /// missing.
+    public func decodeOptional<Value: Decodable>(key: String) throws -> Value? {
+        return try ignoreMissingKey(try decode(key))
+    }
+
+    /// Decode `Value` located at `key`, throws Error but will return nil if key is missing.
+    public func decodeOptional<Value>(key: String) throws -> Value? {
+        return try ignoreMissingKey(try decode(key))
     }
 }
