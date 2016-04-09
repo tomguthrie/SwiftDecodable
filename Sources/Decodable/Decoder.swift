@@ -71,4 +71,15 @@ public struct Decoder {
 
         return value
     }
+
+    /// Decode `Value` located at `key`, throws Error but will return nil if key is missing.
+    public func decodeOptional<Value>(key: String) throws -> Value? {
+        do {
+            return try decode(key)
+        } catch Error.MissingKey {
+            return nil
+        } catch {
+            throw error
+        }
+    }
 }

@@ -8,7 +8,7 @@ struct Person: Decodable {
     init(decoder: Decoder) throws {
         self.name = try decoder.decode("name")
         self.age = try decoder.decode("age")
-        self.email = try decoder.decode("email")
+        self.email = try decoder.decodeOptional("email")
     }
 
     struct Name: Decodable {
