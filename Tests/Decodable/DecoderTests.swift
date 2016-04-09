@@ -4,19 +4,19 @@ import XCTest
 class DecoderTests: XCTestCase {
     func testDecodingString() throws {
         let decoder = Decoder(json: ["string": "Decoded"])
-        let result: String = try decoder.decode("string")
+        let result: String = try decoder.value(forKey: "string")
         XCTAssertEqual(result, "Decoded")
     }
 
     func testDecodingInt() throws {
         let decoder = Decoder(json: ["integer": 1])
-        let result: Int = try decoder.decode("integer")
+        let result: Int = try decoder.value(forKey: "integer")
         XCTAssertEqual(result, 1)
     }
 
     func testDecodingMissingKey() {
         let decoder = Decoder(json: [:])
-        XCTAssertThrowsError(try decoder.decode("string") as String) { error in
+        XCTAssertThrowsError(try decoder.value(forKey: "string") as String) { error in
             switch error {
             case Decoder.Error.missingKey(let key):
                 XCTAssertEqual(key, "string")
@@ -28,7 +28,7 @@ class DecoderTests: XCTestCase {
 
     func testDecodingWrongType() {
         let decoder = Decoder(json: ["string": "Decoded"])
-        XCTAssertThrowsError(try decoder.decode("string") as Int) { error in
+        XCTAssertThrowsError(try decoder.value(forKey: "string") as Int) { error in
             switch error {
             case let Decoder.Error.wrongType(key, _, _):
                 XCTAssertEqual(key, "string")
@@ -43,13 +43,13 @@ class DecoderTests: XCTestCase {
 
     func testDecodingURL() throws {
         let decoder = Decoder(json: ["url": "http://apple.com"])
-        let result: NSURL = try decoder.decode("url")
+        let result: NSURL = try decoder.value(forKey: "url")
         XCTAssertEqual(result.absoluteString, "http://apple.com")
     }
 
     func testDecodingInvalidURL() {
         let decoder = Decoder(json: ["url": "£"])
-        XCTAssertThrowsError(try decoder.decode("url") as NSURL) { error in
+        XCTAssertThrowsError(try decoder.value(forKey: "url") as NSURL) { error in
             switch error {
             case let Decoder.Error.invalidURL(key, stringValue):
                 XCTAssertEqual(key, "url")
@@ -66,7 +66,7 @@ class DecoderTests: XCTestCase {
         formatter.dateFormat = "yyyy-MM-dd 'at' HH:mm:ss"
 
         let decoder = Decoder(json: ["date": formatter.string(from: date)])
-        let result: NSDate = try decoder.decode("date", formatter: formatter)
+        let result: NSDate = try decoder.value(forKey: "date", formatter: formatter)
         XCTAssertEqual(formatter.string(from: result), formatter.string(from: date))
     }
 
@@ -75,7 +75,7 @@ class DecoderTests: XCTestCase {
         formatter.dateStyle = .longStyle
 
         let decoder = Decoder(json: ["date": "12:00 PM"])
-        XCTAssertThrowsError(try decoder.decode("date", formatter: formatter) as NSDate) { error in
+        XCTAssertThrowsError(try decoder.value(forKey: "date", formatter: formatter) as NSDate) { error in
             switch error {
             case let Decoder.Error.invalidDate(key, stringValue, formatter):
                 XCTAssertEqual(key, "date")
@@ -97,7 +97,7 @@ class DecoderTests: XCTestCase {
             "email": "johndoe@gmail.com"
         ]])
 
-        let person: Person = try decoder.decode("person")
+        let person: Person = try decoder.value(forKey: "person")
         XCTAssertEqual(person.name.first, "John")
         XCTAssertEqual(person.name.second, "Doe")
         XCTAssertEqual(person.age, 25)
@@ -106,7 +106,7 @@ class DecoderTests: XCTestCase {
 
     func testDecodingDecodableMissingKey() {
         let decoder = Decoder(json: ["person": [:]])
-        XCTAssertThrowsError(try decoder.decode("person") as Person) { error in
+        XCTAssertThrowsError(try decoder.value(forKey: "person") as Person) { error in
             switch error {
             case let Decoder.Error.missingKey(key):
                 XCTAssertEqual(key, "person.name")
@@ -118,7 +118,7 @@ class DecoderTests: XCTestCase {
 
     func testDecodingDecodableWrongType() {
         let decoder = Decoder(json: ["person": ["name": "John Doe"]])
-        XCTAssertThrowsError(try decoder.decode("person") as Person) { error in
+        XCTAssertThrowsError(try decoder.value(forKey: "person") as Person) { error in
             switch error {
             case let Decoder.Error.wrongType(key, _, _):
                 XCTAssertEqual(key, "person.name")
@@ -133,19 +133,19 @@ class DecoderTests: XCTestCase {
 
     func testDecodingOptionalString() throws {
         let decoder = Decoder(json: ["string": "Decoded"])
-        let result: String? = try decoder.decodeOptional("string")
+        let result: String? = try decoder.optionalValue(forKey: "string")
         XCTAssertEqual(result, "Decoded")
     }
 
     func testDecodingOptionalMissingKey() throws {
         let decoder = Decoder(json: [:])
-        let result: String? = try decoder.decodeOptional("string")
+        let result: String? = try decoder.optionalValue(forKey: "string")
         XCTAssertNil(result)
     }
 
     func testDecodingOptionalWrongType() {
         let decoder = Decoder(json: ["string": "Decoded"])
-        XCTAssertThrowsError(try decoder.decode("string") as Int) { error in
+        XCTAssertThrowsError(try decoder.optionalValue(forKey: "string") as Int?) { error in
             switch error {
             case let Decoder.Error.wrongType(key, _, _):
                 XCTAssertEqual(key, "string")
