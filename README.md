@@ -37,6 +37,8 @@ let data: NSData = ...
 let person = Person(data: data)
 ```
 
+For a more complete example see [Person.swift](Tests/Decodable/Person.swift)
+
 ## License
 
 SwiftDecodable is released under the [MIT License](LICENSE).
