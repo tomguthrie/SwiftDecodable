@@ -17,4 +17,19 @@ class DecodableTests: XCTestCase {
         XCTAssertEqual(person.age, 25)
         XCTAssertEqual(person.email, "johndoe@gmail.com")
     }
+
+    func testDecodesPersonMissingEmail() throws {
+        let person = try Person(json: [
+            "name": [
+                "first": "John",
+                "second": "Doe"
+            ],
+            "age": 25,
+        ])
+
+        XCTAssertEqual(person.name.first, "John")
+        XCTAssertEqual(person.name.second, "Doe")
+        XCTAssertEqual(person.age, 25)
+        XCTAssertNil(person.email)
+    }
 }
