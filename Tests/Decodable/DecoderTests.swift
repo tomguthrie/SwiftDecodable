@@ -130,4 +130,31 @@ class DecoderTests: XCTestCase {
             }
         }
     }
+
+    func testDecodingOptionalString() throws {
+        let decoder = Decoder(json: ["string": "Decoded"])
+        let result: String? = try decoder.decodeOptional("string")
+        XCTAssertEqual(result, "Decoded")
+    }
+
+    func testDecodingOptionalMissingKey() throws {
+        let decoder = Decoder(json: [:])
+        let result: String? = try decoder.decodeOptional("string")
+        XCTAssertNil(result)
+    }
+
+    func testDecodingOptionalWrongType() {
+        let decoder = Decoder(json: ["string": "Decoded"])
+        XCTAssertThrowsError(try decoder.decode("string") as Int) { error in
+            switch error {
+            case let Decoder.Error.WrongType(key, _, _):
+                XCTAssertEqual(key, "string")
+                // FIXME: Properly test types returned.
+//                XCTAssertEqual(String(expected), String(Int.self))
+//                XCTAssertEqual(String(actual), String(String.self))
+            default:
+                XCTFail("Wrong error thrown")
+            }
+        }
+    }
 }
