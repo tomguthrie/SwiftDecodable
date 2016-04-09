@@ -25,10 +25,10 @@ public struct Decoder {
 
     /// Error that has occured during decoding.
     public enum Error: ErrorProtocol {
-        case MissingKey(String)
-        case WrongType(key: String, expected: Any.Type, actual: Any.Type)
-        case InvalidURL(key: String, stringValue: String)
-        case InvalidDate(key: String, stringValue: String, formatter: NSDateFormatter)
+        case missingKey(String)
+        case wrongType(key: String, expected: Any.Type, actual: Any.Type)
+        case invalidURL(key: String, stringValue: String)
+        case invalidDate(key: String, stringValue: String, formatter: NSDateFormatter)
     }
 
     /// Decode an `NSURL` located at `key`, throws Error including Error.InvalidURL.
@@ -36,7 +36,7 @@ public struct Decoder {
         let stringValue: String = try decode(key)
 
         guard let url = NSURL(string: stringValue) else {
-            throw Error.InvalidURL(key: resolvedPath(key), stringValue: stringValue)
+            throw Error.invalidURL(key: resolvedPath(key), stringValue: stringValue)
         }
 
         return url
@@ -47,7 +47,7 @@ public struct Decoder {
         let stringValue: String = try decode(key)
 
         guard let date = formatter.date(from: stringValue) else {
-            throw Error.InvalidDate(key: resolvedPath(key), stringValue: stringValue, formatter: formatter)
+            throw Error.invalidDate(key: resolvedPath(key), stringValue: stringValue, formatter: formatter)
         }
 
         return date
@@ -63,10 +63,10 @@ public struct Decoder {
     public func decode<Value>(key: String) throws -> Value {
         guard let value = json[key] as? Value else {
             guard let value = json[key] else {
-                throw Error.MissingKey(resolvedPath(key))
+                throw Error.missingKey(resolvedPath(key))
             }
 
-            throw Error.WrongType(key: resolvedPath(key), expected: Value.self, actual: value.dynamicType)
+            throw Error.wrongType(key: resolvedPath(key), expected: Value.self, actual: value.dynamicType)
         }
 
         return value
@@ -75,7 +75,7 @@ public struct Decoder {
     func ignoreMissingKey<Value>(@autoclosure expression: () throws -> Value) throws -> Value? {
         do {
             return try expression()
-        } catch Error.MissingKey {
+        } catch Error.missingKey {
             return nil
         } catch {
             throw error
