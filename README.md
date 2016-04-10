@@ -1,6 +1,6 @@
 # SwiftDecodable
 
-Simple decoding of JSON to Swift structs/classes without meaningless operators.
+Simple decoding of JSON to Swift structs/classes.
 
 ## Usage
 
