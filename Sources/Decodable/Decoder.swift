@@ -18,7 +18,7 @@ public struct Decoder {
         self.path = path
     }
 
-    func resolvedPath(key: String) -> String {
+    private func resolvedPath(key: String) -> String {
         let path = self.path + [key]
         return path.joined(separator: ".")
     }
@@ -67,7 +67,7 @@ public struct Decoder {
         return value
     }
 
-    func ignoreMissingKey<Value>(@autoclosure expression: () throws -> Value) throws -> Value? {
+    private func ignoreMissingKeyError<Value>(@autoclosure expression: () throws -> Value) throws -> Value? {
         do {
             return try expression()
         } catch Error.missingKey {
@@ -79,21 +79,21 @@ public struct Decoder {
 
     /// Decode url for key, returning nil if not found.
     public func optionalValue(forKey key: String) throws -> NSURL? {
-        return try ignoreMissingKey(try value(forKey: key))
+        return try ignoreMissingKeyError(value(forKey: key))
     }
 
     /// Decode date for key using a formatter, returning nil if not found.
     public func optionalValue(forKey key: String, formatter: NSDateFormatter) throws -> NSDate? {
-        return try ignoreMissingKey(try value(forKey: key))
+        return try ignoreMissingKeyError(value(forKey: key, formatter: formatter))
     }
 
     /// Decode decodable value for key, returning nil if not found.
     public func optionalValue<Value: Decodable>(forKey key: String) throws -> Value? {
-        return try ignoreMissingKey(try value(forKey: key))
+        return try ignoreMissingKeyError(value(forKey: key))
     }
 
     /// Decode value for key, returning nil if not found.
     public func optionalValue<Value>(forKey key: String) throws -> Value? {
-        return try ignoreMissingKey(try value(forKey: key))
+        return try ignoreMissingKeyError(value(forKey: key))
     }
 }
