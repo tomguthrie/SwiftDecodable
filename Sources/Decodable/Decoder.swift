@@ -18,7 +18,7 @@ public struct Decoder {
         self.path = path
     }
 
-    private func resolvedPath(key: String) -> String {
+    private func resolvedPath(_ key: String) -> String {
         let path = self.path + [key]
         return path.joined(separator: ".")
     }
@@ -67,7 +67,7 @@ public struct Decoder {
         return value
     }
 
-    private func ignoreMissingKeyError<Value>(@autoclosure expression: () throws -> Value) throws -> Value? {
+    private func ignoreMissingKeyError<Value>(@autoclosure _ expression: () throws -> Value) throws -> Value? {
         do {
             return try expression()
         } catch Error.missingKey {
