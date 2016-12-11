@@ -70,6 +70,16 @@ class DecoderTests: XCTestCase {
         XCTAssertEqual(formatter.string(from: result), formatter.string(from: date))
     }
 
+    @available(iOS 10.0, macOS 10.12, *)
+    func testDecodingISO8601Date() throws {
+        let date = Date()
+        let formatter = ISO8601DateFormatter()
+
+        let decoder = Decoder(json: ["date": formatter.string(from: date)])
+        let result: Date = try decoder.value(forKey: "date", formatter: formatter)
+        XCTAssertEqual(formatter.string(from: result), formatter.string(from: date))
+    }
+
     func testDecodingInvalidDate() {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -77,10 +87,9 @@ class DecoderTests: XCTestCase {
         let decoder = Decoder(json: ["date": "12:00 PM"])
         XCTAssertThrowsError(try decoder.value(forKey: "date", formatter: formatter) as Date) { error in
             switch error {
-            case let Decoder.Error.invalidDate(key, stringValue, formatter):
+            case let Decoder.Error.invalidDate(key, stringValue):
                 XCTAssertEqual(key, "date")
                 XCTAssertEqual(stringValue, "12:00 PM")
-                XCTAssertEqual(formatter, formatter)
             default:
                 XCTFail("Wrong error thrown")
             }
