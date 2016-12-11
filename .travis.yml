@@ -10,9 +10,9 @@ script:
   - set -o pipefail;
     case $PLATFORM in
     macOS)
-      xcodebuild -scheme DataKit-macOS test | xcpretty;;
+      xcodebuild -scheme SwiftDecodable-macOS test | xcpretty;;
     iOS)
-      xcodebuild -scheme DataKit-iOS -destination "id=63A0BA5F-3911-496F-BF2E-512830B4AD7F" test | xcpretty;;
+      xcodebuild -scheme SwiftDecodable-iOS -destination "id=63A0BA5F-3911-496F-BF2E-512830B4AD7F" test | xcpretty;;
     swiftpm)
       swift build && swift test;;
     esac
