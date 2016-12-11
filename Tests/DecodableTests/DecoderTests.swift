@@ -113,6 +113,34 @@ class DecoderTests: XCTestCase {
         XCTAssertEqual(person.email, "johndoe@gmail.com")
     }
 
+    func testDecodingArrayOfDecodables() throws {
+        let decoder = Decoder(json: [
+            "people":   [
+                [
+                    "name": [
+                        "first": "John",
+                        "second": "Doe"
+                    ],
+                    "age": 25,
+                    "email": "johndoe@gmail.com"
+                ],
+                [
+                    "name": [
+                        "first": "Doe",
+                        "second": "John"
+                    ],
+                    "age": 27,
+                    "email": "johndoe@gmail.com"
+                ]
+            ]
+        ])
+
+        let people: [Person] = try decoder.array(forKey: "people")
+        XCTAssertEqual(people.count, 2)
+        XCTAssertEqual(people.first?.name.first, "John")
+        XCTAssertEqual(people.last?.name.first, "Doe")
+    }
+
     func testDecodingDecodableMissingKey() {
         let decoder = Decoder(json: ["person": [:]])
         XCTAssertThrowsError(try decoder.value(forKey: "person") as Person) { error in
