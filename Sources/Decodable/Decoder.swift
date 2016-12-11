@@ -1,7 +1,7 @@
 import Foundation
 
 /// JSON object type.
-public typealias JSON = [String: AnyObject]
+public typealias JSON = [String: Any]
 
 /// Decodes JSON in a safe manner. Errors will be thrown describing why decoding failed.
 public struct Decoder {
@@ -24,12 +24,12 @@ public struct Decoder {
     }
 
     /// Possible errors thrown during decoding.
-    public enum Error: ErrorProtocol {
+    public enum Error: Swift.Error {
         case missingKey(String)
         case wrongType(key: String, expected: Any.Type, actual: Any.Type)
         case invalidURL(key: String, stringValue: String)
-        case invalidDate(key: String, stringValue: String, formatter: NSDateFormatter)
-        case invalidJSON(AnyObject)
+        case invalidDate(key: String, stringValue: String, formatter: DateFormatter)
+        case invalidJSON(Any)
     }
 
     /// Decode url for key.
@@ -42,7 +42,7 @@ public struct Decoder {
     }
 
     /// Decode date for key using formatter.
-    public func value(forKey key: String, formatter: NSDateFormatter) throws -> NSDate {
+    public func value(forKey key: String, formatter: DateFormatter) throws -> Date {
         let stringValue: String = try value(forKey: key)
         guard let date = formatter.date(from: stringValue) else {
             throw Error.invalidDate(key: resolvedPath(key), stringValue: stringValue, formatter: formatter)
@@ -62,12 +62,12 @@ public struct Decoder {
             guard let value = json[key] else {
                 throw Error.missingKey(resolvedPath(key))
             }
-            throw Error.wrongType(key: resolvedPath(key), expected: Value.self, actual: value.dynamicType)
+            throw Error.wrongType(key: resolvedPath(key), expected: Value.self, actual: type(of: value))
         }
         return value
     }
 
-    private func ignoreMissingKeyError<Value>(@autoclosure _ expression: () throws -> Value) throws -> Value? {
+    private func ignoreMissingKeyError<Value>(_ expression: @autoclosure () throws -> Value) throws -> Value? {
         do {
             return try expression()
         } catch Error.missingKey {
@@ -83,7 +83,7 @@ public struct Decoder {
     }
 
     /// Decode date for key using a formatter, returning nil if not found.
-    public func optionalValue(forKey key: String, formatter: NSDateFormatter) throws -> NSDate? {
+    public func optionalValue(forKey key: String, formatter: DateFormatter) throws -> Date? {
         return try ignoreMissingKeyError(value(forKey: key, formatter: formatter))
     }
 

@@ -34,7 +34,7 @@ class DecodableTests: XCTestCase {
     }
 
     func testDecodesFromData() throws {
-        let data = try NSJSONSerialization.data(withJSONObject: [
+        let data = try JSONSerialization.data(withJSONObject: [
             "name": [
                 "first": "John",
                 "second": "Doe"
