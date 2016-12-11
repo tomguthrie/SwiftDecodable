@@ -11,8 +11,8 @@ extension Decodable {
         try self.init(decoder: decoder)
     }
 
-    public init(data: NSData) throws {
-        let jsonObject = try NSJSONSerialization.jsonObject(with: data, options: [])
+    public init(data: Data) throws {
+        let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
         guard let json = jsonObject as? JSON else {
             throw Decoder.Error.invalidJSON(jsonObject)
         }
