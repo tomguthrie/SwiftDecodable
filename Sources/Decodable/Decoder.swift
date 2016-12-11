@@ -28,8 +28,7 @@ public struct Decoder {
         case missingKey(String)
         case wrongType(key: String, expected: Any.Type, actual: Any.Type)
         case invalidURL(key: String, stringValue: String)
-        case invalidDate(key: String, stringValue: String, formatter: DateFormatter)
-        case invalidISO8601Date(key: String, stringValue: String, formatter: ISO8601DateFormatter)
+        case invalidDate(key: String, stringValue: String)
         case invalidJSON(Any)
     }
 
@@ -46,16 +45,17 @@ public struct Decoder {
     public func value(forKey key: String, formatter: DateFormatter) throws -> Date {
         let stringValue: String = try value(forKey: key)
         guard let date = formatter.date(from: stringValue) else {
-            throw Error.invalidDate(key: resolvedPath(key), stringValue: stringValue, formatter: formatter)
+            throw Error.invalidDate(key: resolvedPath(key), stringValue: stringValue)
         }
         return date
     }
 
     /// Decode ISO8601 date for key using formatter.
-    public func value(forKey key: String, formatter: ISO8601DateFormatter = .shared) throws -> Date {
+    @available(iOS 10.0, macOS 10.12, *)
+    public func value(forKey key: String, formatter: ISO8601DateFormatter) throws -> Date {
         let stringValue: String = try value(forKey: key)
         guard let date = formatter.date(from: stringValue) else {
-            throw Error.invalidISO8601Date(key: resolvedPath(key), stringValue: stringValue, formatter: formatter)
+            throw Error.invalidDate(key: resolvedPath(key), stringValue: stringValue)
         }
         return date
     }
@@ -106,8 +106,4 @@ public struct Decoder {
     public func optionalValue<Value>(forKey key: String) throws -> Value? {
         return try ignoreMissingKeyError(value(forKey: key))
     }
-}
-
-extension ISO8601DateFormatter {
-    fileprivate static let shared = ISO8601DateFormatter()
 }
