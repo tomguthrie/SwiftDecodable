@@ -70,6 +70,15 @@ class DecoderTests: XCTestCase {
         XCTAssertEqual(formatter.string(from: result), formatter.string(from: date))
     }
 
+    func testDecodingISO8601Date() throws {
+        let date = Date()
+        let formatter = ISO8601DateFormatter()
+
+        let decoder = Decoder(json: ["date": formatter.string(from: date)])
+        let result: Date = try decoder.value(forKey: "date", formatter: formatter)
+        XCTAssertEqual(formatter.string(from: result), formatter.string(from: date))
+    }
+
     func testDecodingInvalidDate() {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
