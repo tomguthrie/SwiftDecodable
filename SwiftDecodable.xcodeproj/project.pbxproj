@@ -93,7 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				E94CD4E11DFD48A7001B53B8 /* Sources */,
-				E94CD4EC1DFD48A7001B53B8 /* SwiftDecodableTests */,
+				E94CD4EC1DFD48A7001B53B8 /* Tests */,
 				E94CD4E01DFD48A7001B53B8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -121,7 +121,7 @@
 			path = Sources/Decodable;
 			sourceTree = "<group>";
 		};
-		E94CD4EC1DFD48A7001B53B8 /* SwiftDecodableTests */ = {
+		E94CD4EC1DFD48A7001B53B8 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				E94CD4EF1DFD48A7001B53B8 /* Info.plist */,
@@ -129,7 +129,7 @@
 				E94CD51B1DFD4AA9001B53B8 /* DecoderTests.swift */,
 				E94CD51C1DFD4AA9001B53B8 /* Person.swift */,
 			);
-			name = SwiftDecodableTests;
+			name = Tests;
 			path = Tests/DecodableTests;
 			sourceTree = "<group>";
 		};

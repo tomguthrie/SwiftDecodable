@@ -83,6 +83,12 @@ public struct Decoder {
         return try array.map(Value.init(json:))
     }
 
+    /// Decode a sub decoder for `key`.
+    public func decoder(forKey key: String) throws -> Decoder {
+        let json = try value(forKey: key) as JSON
+        return Decoder(json: json, path: self.path + [key])
+    }
+
     private func ignoreMissingKeyError<Value>(_ expression: @autoclosure () throws -> Value) throws -> Value? {
         do {
             return try expression()
